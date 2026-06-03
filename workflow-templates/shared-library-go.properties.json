@@ -1,0 +1,7 @@
+{
+  "name": "Zettlab Shared Library (Go)",
+  "description": "CI + release-on-tag for a private Go shared library repo under zettlab/. Matches RFC-0001. Use this when creating a new zettlab/<libname> repo.",
+  "iconName": "octicon package",
+  "categories": ["Go"],
+  "filePatterns": ["go.mod"]
+}
