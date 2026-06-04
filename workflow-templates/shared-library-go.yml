@@ -13,6 +13,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Reject local replace directives for zettlab modules
+        # RFC-0001 §A2: depend on tagged versions only. A `replace`
+        # directive pointing at a local path or another zettlab module
+        # is a local-edit convenience (see Part 5 of the onboarding
+        # doc) and must never reach main. This check is intentionally
+        # strict — no escape-hatch comment — because one false positive
+        # is one PR discussion; one accidental merge breaks every
+        # downstream `go mod download`.
+        run: |
+          if grep -nE "^replace[[:space:]]+github\.com/zettlab/" go.mod; then
+            echo "::error file=go.mod::go.mod contains a 'replace' directive pointing at a zettlab module."
+            echo "::error::Remove with: go mod edit -dropreplace <module> && go mod tidy"
+            echo "::error::See https://github.com/zettlab/zettlab-product-dev/blob/main/docs/getting-started-go-shared-libs.md (Part 5) for the local-edit workflow."
+            exit 1
+          fi
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
